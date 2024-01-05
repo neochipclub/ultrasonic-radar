@@ -11,10 +11,13 @@ long duration;
 int distance;
 int roundAngle;
 int Angle;
+bool clockwise = true;
 Stepper stepper(STEPS, 8, 10, 9, 11);
+  }
 
 int stepCount = 0;
 
+  Serial.print(Angle);
 void setup() {
 // nothing to do
  pinMode(trigPin, OUTPUT);
@@ -25,25 +28,22 @@ void setup() {
 }
 
 void loop() {
-  stepper.setSpeed(10);
-  stepper.step(5);
+  stepper.setSpeed(30);
   distance = calculateDistance();
-  if (distance <= 200) {
+  if (distance <= 100) {
     digitalWrite(ledPin, HIGH);
-    digitalWrite(buzzerPin, HIGH);
   } else {
     digitalWrite(ledPin, LOW);
-    digitalWrite(buzzerPin, LOW);
-  }
   delay(0);
-  Angle = stepCount*0.883218842;
+  Angle = stepCount*0.176;
   roundAngle = (int)Angle;
-  Serial.print(Angle);
   Serial.print(",");
   Serial.print(distance);
   Serial.print(".");
-  stepCount++;
-  if (stepCount==408) {stepCount =0;}
+  if (clockwise == true) {stepCount++; stepper.step(1);}
+  if (clockwise == false) {stepCount--; stepper.step(-1);}
+  if (stepCount == 2038) {clockwise = false;}
+  if (stepCount == 0) {clockwise = true;}
 
   
 }
